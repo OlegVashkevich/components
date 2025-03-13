@@ -20,12 +20,16 @@ final class ComponentExtension implements ExtensionInterface
     private array $css_content = [];
     private array $js_content = [];
 
+    private Renderer $local_renderer;
+
     /**
      * @param string $componentsPath root directory storing components.
      */
-    public function __construct(string $componentsPath, private Renderer $renderer)
+    public function __construct(string $componentsPath, private readonly Renderer $renderer)
     {
         $this->componentsPath = rtrim($componentsPath, '\/');
+        $this->local_renderer = new Renderer($componentsPath);
+        $this->local_renderer->addExtension($this);
     }
 
     /**
@@ -59,11 +63,14 @@ final class ComponentExtension implements ExtensionInterface
             ));
         }
 
-        ob_start();
+        /*ob_start();
         //print_r($params);
         extract(['data' => $params], EXTR_OVERWRITE);
         require $template_path;
-        $content = ob_get_clean();
+        $content = ob_get_clean();*/
+        $content = $this->local_renderer->render($directory.DIRECTORY_SEPARATOR . 'template.php', ['data' => $params]);
+
+        //$content = '<!-- start '.$directory.'-->'.PHP_EOL.$content.PHP_EOL.'<!-- end '.$directory.'-->'.PHP_EOL;
 
         $css_path = $component_path.DIRECTORY_SEPARATOR.'style.css';
         if (file_exists($css_path)) {

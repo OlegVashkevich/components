@@ -13,6 +13,7 @@ $this->block('title', 'Page Title');
     <?=$this->component('content', ['tt1'=>'tttt1'])?>
     <?=$this->component('content', [])?>
     <?=$this->component('content2', [])?>
+    <?=$this->component('content3', [])?>
     <div><?=$variableName?></div>
 <?php $this->beginBlock('meta');?>
     <meta name="description" content="Page Description">

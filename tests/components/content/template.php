@@ -2,4 +2,4 @@
 /** @var mixed $data */
 ?>
 
-<p>Page Content2<?=$data['tt1']?></p>
+<p>Page Content1<?=$data['tt1']?></p>
