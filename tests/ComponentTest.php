@@ -21,7 +21,7 @@ class ComponentTest extends TestCase
     <meta charset="UTF-8">
     <title>Page Title</title>
         <meta name="description" content="Page Description">
-    <link rel="stylesheet" href="content/style.css?v=1741869139">'.PHP_EOL.'<link rel="stylesheet" href="content2/style.css?v=1741869139">'.PHP_EOL.'</head>
+    <link rel="stylesheet" href="components/content/style.css?v=1741869139">'.PHP_EOL.'<link rel="stylesheet" href="components/content2/style.css?v=1741869139">'.PHP_EOL.'</head>
 <body class="app">
 
     <p>Page Content</p>
@@ -33,7 +33,7 @@ class ComponentTest extends TestCase
 <p>Page Content2tttt11</p>
 <p>Page Content2</p>
 <p>Page Content2tttt22</p>    <div>значение переменной любого типа</div>
-'.PHP_EOL.'<script src="content/script.js?v=1741869367"></script>'.PHP_EOL.'<script src="content2/script.js?v=1741869367"></script>'.PHP_EOL.'</body>
+'.PHP_EOL.'<script src="components/content/script.js?v=1741869367"></script>'.PHP_EOL.'<script src="components/content2/script.js?v=1741869367"></script>'.PHP_EOL.'</body>
 </html>';
 
         $renderer = new Renderer('tests/views');

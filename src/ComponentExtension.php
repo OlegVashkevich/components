@@ -67,11 +67,11 @@ final class ComponentExtension implements ExtensionInterface
 
         $css_path = $component_path.DIRECTORY_SEPARATOR.'style.css';
         if (file_exists($css_path)) {
-            $this->css_content[$css_path] = '<link rel="stylesheet" href="'.$directory.DIRECTORY_SEPARATOR.'style.css'. '?v=' . filemtime($css_path).'">';
+            $this->css_content[$css_path] = '<link rel="stylesheet" href="'.basename($this->componentsPath).DIRECTORY_SEPARATOR.$directory.DIRECTORY_SEPARATOR.'style.css'. '?v=' . filemtime($css_path).'">';
         }
         $js_path = $component_path.DIRECTORY_SEPARATOR.'script.js';
         if (file_exists($js_path)) {
-            $this->js_content[$js_path] = '<script src="'.$directory.DIRECTORY_SEPARATOR.'script.js'. '?v=' . filemtime($js_path).'"></script>';
+            $this->js_content[$js_path] = '<script src="'.basename($this->componentsPath).DIRECTORY_SEPARATOR.$directory.DIRECTORY_SEPARATOR.'script.js'. '?v=' . filemtime($js_path).'"></script>';
         }
 
         $this->renderer->block(md5($template_path.serialize($params)), $content);
