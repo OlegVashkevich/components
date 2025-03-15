@@ -10,7 +10,7 @@ component - is a directory with files
 add extension
 ```php
 $renderer = new Renderer('tests/views');
-$extension = new ComponentExtension('tests/components',$renderer);
+$extension = new ComponentExtension('components',$renderer);
 $renderer->addExtension($extension);
 ```
 

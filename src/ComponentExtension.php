@@ -6,6 +6,7 @@ namespace OlegV\Components;
 
 use Devanych\View\Extension\ExtensionInterface;
 use Devanych\View\Renderer;
+use ReflectionProperty;
 use RuntimeException;
 use Throwable;
 
@@ -19,17 +20,20 @@ final class ComponentExtension implements ExtensionInterface
     /**
      * @var array<string, string>
      */
-    private array $css_content = [];
+    private array $cssContent = [];
 
     /**
      * @var array<string, string>
      */
-    private array $js_content = [];
+    private array $jsContent = [];
 
-    private Renderer $local_renderer;
+    private Renderer $localRenderer;
+
+    private string $viewDirectory;
 
     /**
-     * @param  string  $componentsPath  root directory storing components.
+     * @param  string  $componentsPath  directory storing components relatively viewDirectory of renderer.
+     * @param  Renderer  $renderer
      */
     public function __construct(
         string $componentsPath,
@@ -37,9 +41,15 @@ final class ComponentExtension implements ExtensionInterface
     ) {
         $this->componentsPath = rtrim($componentsPath, '\/');
 
+        //dirty... but need find renderer path to viewDirectory
+        $property = new ReflectionProperty(Renderer::class, "viewDirectory");
+        $property = $property->getValue($renderer);
+        if (is_string($property)) {
+            $this->viewDirectory = $property;
+        }
+
         //need for render component without layout
-        $this->local_renderer = new Renderer($componentsPath);
-        $this->local_renderer->addExtension($this);
+        $this->localRenderer = clone $renderer;
     }
 
     /**
@@ -64,7 +74,7 @@ final class ComponentExtension implements ExtensionInterface
      */
     public function component(string $directory, array $params = []): string
     {
-        $component_path = $this->componentsPath.DIRECTORY_SEPARATOR.$directory;
+        $component_path = $this->viewDirectory.DIRECTORY_SEPARATOR.$this->componentsPath.DIRECTORY_SEPARATOR.$directory;
         $template_path = $component_path.DIRECTORY_SEPARATOR.'template.php';
         if (!file_exists($template_path)) {
             throw new RuntimeException(
@@ -80,21 +90,22 @@ final class ComponentExtension implements ExtensionInterface
         extract(['data' => $params], EXTR_OVERWRITE);
         require $template_path;
         $content = ob_get_clean();*/
-        $content = $this->local_renderer->render($directory.DIRECTORY_SEPARATOR.'template.php', ['data' => $params]);
+        $content = $this->localRenderer->render(
+            $this->componentsPath.DIRECTORY_SEPARATOR.$directory.DIRECTORY_SEPARATOR.'template.php',
+            ['data' => $params],
+        );
 
         //$content = '<!-- start '.$directory.'-->'.PHP_EOL.$content.PHP_EOL.'<!-- end '.$directory.'-->'.PHP_EOL;
 
         $css_path = $component_path.DIRECTORY_SEPARATOR.'style.css';
         if (file_exists($css_path)) {
-            $this->css_content[$css_path] = '<link rel="stylesheet" href="'.basename(
-                    $this->componentsPath,
-                ).DIRECTORY_SEPARATOR.$directory.DIRECTORY_SEPARATOR.'style.css'.'?v='.filemtime($css_path).'">';
+            $this->cssContent[$css_path] = '<link rel="stylesheet" href="'.$this->componentsPath.DIRECTORY_SEPARATOR.$directory.DIRECTORY_SEPARATOR.'style.css'.'?v='.filemtime(
+                    $css_path,
+                ).'">';
         }
         $js_path = $component_path.DIRECTORY_SEPARATOR.'script.js';
         if (file_exists($js_path)) {
-            $this->js_content[$js_path] = '<script src="'.basename(
-                    $this->componentsPath,
-                ).DIRECTORY_SEPARATOR.$directory.DIRECTORY_SEPARATOR.'script.js'.'?v='.filemtime(
+            $this->jsContent[$js_path] = '<script src="'.$this->componentsPath.DIRECTORY_SEPARATOR.$directory.DIRECTORY_SEPARATOR.'script.js'.'?v='.filemtime(
                     $js_path,
                 ).'"></script>';
         }
@@ -105,11 +116,11 @@ final class ComponentExtension implements ExtensionInterface
 
     public function componentsCss(): string
     {
-        return implode(PHP_EOL, $this->css_content).PHP_EOL;
+        return implode(PHP_EOL, $this->cssContent).PHP_EOL;
     }
 
     public function componentsJs(): string
     {
-        return PHP_EOL.implode(PHP_EOL, $this->js_content).PHP_EOL;
+        return PHP_EOL.implode(PHP_EOL, $this->jsContent).PHP_EOL;
     }
 }

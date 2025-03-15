@@ -19,7 +19,7 @@ class ComponentTest extends TestCase
         $test_content = file_get_contents(__DIR__.'/data/output.txt');
 
         $renderer = new Renderer('tests/views');
-        $extension = new ComponentExtension('tests/components', $renderer);
+        $extension = new ComponentExtension('components', $renderer);
         $renderer->addExtension($extension);
 
         $content = $renderer->render('main', [
@@ -31,9 +31,6 @@ class ComponentTest extends TestCase
     private function clearOutput(mixed $data): ?string
     {
         if (is_string($data)) {
-            $data = str_replace("\t", '', $data);
-            $data = str_replace("\r\n", '', $data);
-            $data = str_replace("\n", '', $data);
             return preg_replace("/\s+/u", '', $data);
         }
         return null;
