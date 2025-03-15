@@ -3,7 +3,6 @@
 namespace Tests;
 
 use Devanych\View\Renderer;
-use Exception;
 use OlegV\Components\ComponentExtension;
 use PHPUnit\Framework\TestCase;
 use Throwable;
@@ -11,10 +10,9 @@ use Throwable;
 class ComponentTest extends TestCase
 {
     /**
-     * @throws Exception
      * @throws Throwable
      */
-    public function testConstructor(): void
+    public function testComponents(): void
     {
         $test_content = file_get_contents(__DIR__.'/data/output.txt');
 
@@ -34,5 +32,20 @@ class ComponentTest extends TestCase
             return preg_replace("/\s+/u", '', $data);
         }
         return null;
+    }
+
+    /**
+     * @throws Throwable
+     */
+    public function testComponentPathException(): void
+    {
+        $this->expectExceptionMessage(
+            'Template file "tests/views/components/bad_component/template.php" does not exist.',
+        );
+        $renderer = new Renderer('tests/views');
+        $extension = new ComponentExtension('components', $renderer);
+        $renderer->addExtension($extension);
+        $content = $renderer->render('bad_component');
+        echo $content;
     }
 }

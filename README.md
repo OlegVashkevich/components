@@ -1,7 +1,7 @@
 # Components
-Web components for [view-renderer](https://github.com/devanych/view-rendere)
+Web components extension for [view-renderer](https://github.com/devanych/view-rendere)
 
-## Example
+## Usage
 component - is a directory with files
 - `template.php` - template - required
 - `style.css` - css styles - optional
@@ -14,7 +14,7 @@ $extension = new ComponentExtension('components',$renderer);
 $renderer->addExtension($extension);
 ```
 
-layout
+add `$this->componentsCss()` and `$this->componentsJs()` to your layout
 ```php
 <!DOCTYPE html>
 <html lang="en">
@@ -30,7 +30,7 @@ layout
 </body>
 </html>
 ```
-view
+use `component` function in your view or in another component
 ```php
 <?=$this->component('content', ['var_key'=>'var_value'])?>
 ```

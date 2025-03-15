@@ -13,7 +13,7 @@ use Throwable;
 final class ComponentExtension implements ExtensionInterface
 {
     /**
-     * @var string root directory storing components.
+     * @var string directory storing components relatively viewDirectory of renderer.
      */
     private string $componentsPath;
 
@@ -34,6 +34,7 @@ final class ComponentExtension implements ExtensionInterface
     /**
      * @param  string  $componentsPath  directory storing components relatively viewDirectory of renderer.
      * @param  Renderer  $renderer
+     * @throws RuntimeException
      */
     public function __construct(
         string $componentsPath,
@@ -46,6 +47,8 @@ final class ComponentExtension implements ExtensionInterface
         $property = $property->getValue($renderer);
         if (is_string($property)) {
             $this->viewDirectory = $property;
+        } else {
+            throw new RuntimeException('Cannot determine view directory.');
         }
 
         //need for render component without layout
@@ -86,10 +89,10 @@ final class ComponentExtension implements ExtensionInterface
         }
 
         /*ob_start();
-        //print_r($params);
         extract(['data' => $params], EXTR_OVERWRITE);
         require $template_path;
         $content = ob_get_clean();*/
+
         $content = $this->localRenderer->render(
             $this->componentsPath.DIRECTORY_SEPARATOR.$directory.DIRECTORY_SEPARATOR.'template.php',
             ['data' => $params],
