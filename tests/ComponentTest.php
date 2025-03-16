@@ -17,7 +17,7 @@ class ComponentTest extends TestCase
         $test_content = file_get_contents(__DIR__.'/data/output.txt');
 
         $renderer = new Renderer('tests/views');
-        $extension = new ComponentExtension('components', $renderer);
+        $extension = new ComponentExtension($renderer, "components", "components");
         $renderer->addExtension($extension);
 
         $content = $renderer->render('main', [
@@ -43,7 +43,7 @@ class ComponentTest extends TestCase
             'Template file "tests/views/components/bad_component/template.php" does not exist.',
         );
         $renderer = new Renderer('tests/views');
-        $extension = new ComponentExtension('components', $renderer);
+        $extension = new ComponentExtension($renderer, "components", "components");
         $renderer->addExtension($extension);
         $content = $renderer->render('bad_component');
         echo $content;

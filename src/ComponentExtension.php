@@ -32,13 +32,14 @@ final class ComponentExtension implements ExtensionInterface
     private string $viewDirectory;
 
     /**
-     * @param  string  $componentsPath  directory storing components relatively viewDirectory of renderer.
      * @param  Renderer  $renderer
-     * @throws RuntimeException
+     * @param  string  $componentsPath  directory storing components relatively viewDirectory of renderer.
+     * @param  string  $webRootPath
      */
     public function __construct(
-        string $componentsPath,
         private readonly Renderer $renderer,
+        private readonly string $webRootPath = "/",
+        string $componentsPath = "components/",
     ) {
         $this->componentsPath = rtrim($componentsPath, '\/');
 
@@ -71,11 +72,11 @@ final class ComponentExtension implements ExtensionInterface
      * Includes the directory.
      *
      * @param  string  $directory
-     * @param  array<array-key, mixed>  $params
+     * @param  array<array-key, mixed>  $data
      * @return string
      * @throws Throwable
      */
-    public function component(string $directory, array $params = []): string
+    public function component(string $directory, array $data = []): string
     {
         $component_path = $this->viewDirectory.DIRECTORY_SEPARATOR.$this->componentsPath.DIRECTORY_SEPARATOR.$directory;
         $template_path = $component_path.DIRECTORY_SEPARATOR.'template.php';
@@ -93,28 +94,30 @@ final class ComponentExtension implements ExtensionInterface
         require $template_path;
         $content = ob_get_clean();*/
 
+        $data = new Data($data);
+
         $content = $this->localRenderer->render(
             $this->componentsPath.DIRECTORY_SEPARATOR.$directory.DIRECTORY_SEPARATOR.'template.php',
-            ['data' => $params],
+            ['data' => $data],
         );
 
         //$content = '<!-- start '.$directory.'-->'.PHP_EOL.$content.PHP_EOL.'<!-- end '.$directory.'-->'.PHP_EOL;
 
         $css_path = $component_path.DIRECTORY_SEPARATOR.'style.css';
         if (file_exists($css_path)) {
-            $this->cssContent[$css_path] = '<link rel="stylesheet" href="'.$this->componentsPath.DIRECTORY_SEPARATOR.$directory.DIRECTORY_SEPARATOR.'style.css'.'?v='.filemtime(
+            $this->cssContent[$css_path] = '<link rel="stylesheet" href="/'.$this->webRootPath.'/'.$directory.'/'.'style.css'.'?v='.filemtime(
                     $css_path,
                 ).'">';
         }
         $js_path = $component_path.DIRECTORY_SEPARATOR.'script.js';
         if (file_exists($js_path)) {
-            $this->jsContent[$js_path] = '<script src="'.$this->componentsPath.DIRECTORY_SEPARATOR.$directory.DIRECTORY_SEPARATOR.'script.js'.'?v='.filemtime(
+            $this->jsContent[$js_path] = '<script src="/'.$this->webRootPath.'/'.$directory.'/'.'script.js'.'?v='.filemtime(
                     $js_path,
                 ).'"></script>';
         }
 
-        $this->renderer->block(md5($template_path.serialize($params)), $content);
-        return $this->renderer->renderBlock(md5($template_path.serialize($params)));
+        $this->renderer->block(md5($template_path.serialize($data)), $content);
+        return $this->renderer->renderBlock(md5($template_path.serialize($data)));
     }
 
     public function componentsCss(): string

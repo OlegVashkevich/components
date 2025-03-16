@@ -22,5 +22,7 @@ parameters:
 		noVariableVariables: true
 		strictArrayFilter: true
 		illegalConstructorMethodCall: true
+	stubFiles:
+		- stubs/Renderer.php
 includes:
     - vendor/phpstan/phpstan-strict-rules/rules.neon

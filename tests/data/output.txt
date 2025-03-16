@@ -4,9 +4,9 @@
     <meta charset="UTF-8">
     <title>Page Title</title>
         <meta name="description" content="Page Description">
-    <link rel="stylesheet" href="components/content/style.css?v=1741875141">
-    <link rel="stylesheet" href="components/content2/style.css?v=1741875141">
-    <link rel="stylesheet" href="components/content3/style.css?v=1741875141">
+    <link rel="stylesheet" href="/components/content/style.css?v=1741875141">
+    <link rel="stylesheet" href="/components/content2/style.css?v=1741875141">
+    <link rel="stylesheet" href="/components/content3/style.css?v=1741875141">
 </head>
 <body class="app">
 
@@ -27,8 +27,8 @@
 <p>Page Content1</p>
 <p>Page Content1tttt22</p>    <div>значение переменной любого типа</div>
 
-    <script src="components/content/script.js?v=1741875141"></script>
-    <script src="components/content2/script.js?v=1741875141"></script>
-    <script src="components/content3/script.js?v=1741875141"></script>
+    <script src="/components/content/script.js?v=1741875141"></script>
+    <script src="/components/content2/script.js?v=1741875141"></script>
+    <script src="/components/content3/script.js?v=1741875141"></script>
 </body>
 </html>
