@@ -1,5 +1,9 @@
 <?php
-/** @var OlegV\Components\Data<int|string, mixed> $data */
+/**
+ * @var array{
+ *     "tt1": string|null
+ * } $data
+ */
 
 ?>
 

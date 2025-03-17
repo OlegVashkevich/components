@@ -2,50 +2,69 @@
 
 namespace OlegV\Components;
 
-use ArrayObject;
+use ArrayAccess;
 
 /**
  * @template TKey as array-key
  * @template TValue
- * @extends  ArrayObject<TKey, TValue>
+ * @implements  ArrayAccess<TKey , TValue>
  */
-class Data extends ArrayObject
+class Data implements ArrayAccess
 {
+    private int $offsetCounter = 0;
+
     /**
-     * @param  array<TKey, TValue>  $data
+     * @param  array<TKey , TValue>  $storage
+     * @param  bool  $debug  - ignore array offset warnings
      */
-    public function __construct(array $data)
+    public function __construct(private array $storage, private readonly bool $debug = false) {}
+
+    /**
+     * @param  mixed  $offset
+     * @return mixed
+     */
+    public function offsetGet(mixed $offset): mixed
     {
-        parent::__construct($data);
+        $this->offsetCounter++;
+        $value = null;
+        if (isset($this->storage[$offset])) {
+            $value = $this->storage[$offset];
+        } elseif (!$this->debug) {
+            // @phpstan-ignore-next-line
+            $this->storage[$offset] = new Data([]);
+        }
+        return $value;
     }
 
     /**
-     * @param  TKey  $name
-     * @return string|int|float|null
+     * @param  mixed  $offset
+     * @return bool
      */
-    public function __get(mixed $name): string|int|float|null
+    public function offsetExists(mixed $offset): bool
     {
-        if ($this->offsetExists($name)) {
-            $value = $this->offsetGet($name);
-            if (is_string($value) || is_int($value) || is_float($value)) {
-                return $value;
-            }
-        }
-        return null;
+        return isset($this->storage[$offset]);
     }
 
     /**
-     * @param  TKey  $key
-     * @return string|int|float|null
+     * @param  mixed  $offset
+     * @param  mixed  $value
+     * @return void
      */
-    public function offsetGet(mixed $key): string|int|float|null
+    public function offsetSet(mixed $offset, mixed $value): void
     {
-        if ($this->offsetExists($key)) {
-            $value = parent::offsetGet($key);
-            if (is_string($value) || is_int($value) || is_float($value)) {
-                return $value;
-            }
+        if (is_null($offset)) {
+            $this->storage[] = $value;
+        } else {
+            $this->storage[$offset] = $value;
         }
-        return null;
+    }
+
+    /**
+     * @param  mixed  $offset
+     * @return void
+     */
+    public function offsetUnset(mixed $offset): void
+    {
+        unset($this->storage[$offset]);
     }
 }

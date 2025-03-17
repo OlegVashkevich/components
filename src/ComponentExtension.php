@@ -33,13 +33,15 @@ final class ComponentExtension implements ExtensionInterface
 
     /**
      * @param  Renderer  $renderer
-     * @param  string  $componentsPath  directory storing components relatively viewDirectory of renderer.
      * @param  string  $webRootPath
+     * @param  string  $componentsPath  directory storing components relatively viewDirectory of renderer.
+     * @param  bool  $debug  - ignore array offset warnings
      */
     public function __construct(
         private readonly Renderer $renderer,
         private readonly string $webRootPath = "/",
         string $componentsPath = "components/",
+        private readonly bool $debug = false,
     ) {
         $this->componentsPath = rtrim($componentsPath, '\/');
 
@@ -74,19 +76,27 @@ final class ComponentExtension implements ExtensionInterface
      * @param  string  $directory
      * @param  array<array-key, mixed>  $data
      * @return string
-     * @throws Throwable
      */
     public function component(string $directory, array $data = []): string
     {
         $component_path = $this->viewDirectory.DIRECTORY_SEPARATOR.$this->componentsPath.DIRECTORY_SEPARATOR.$directory;
         $template_path = $component_path.DIRECTORY_SEPARATOR.'template.php';
-        if (!file_exists($template_path)) {
-            throw new RuntimeException(
-                sprintf(
-                    'Template file "%s" does not exist.',
-                    $template_path,
-                ),
-            );
+        try {
+            if (!file_exists($template_path)) {
+                if ($this->debug) {
+                    $path = $template_path;
+                } else {
+                    $path = $directory;
+                }
+                throw new RuntimeException(
+                    sprintf(
+                        'Component "%s" does not exist.',
+                        $path,
+                    ),
+                );
+            }
+        } catch (RuntimeException $e) {
+            return $this->getError($e->getMessage());
         }
 
         /*ob_start();
@@ -94,12 +104,16 @@ final class ComponentExtension implements ExtensionInterface
         require $template_path;
         $content = ob_get_clean();*/
 
-        $data = new Data($data);
+        $data = new Data($data, $this->debug);
 
-        $content = $this->localRenderer->render(
-            $this->componentsPath.DIRECTORY_SEPARATOR.$directory.DIRECTORY_SEPARATOR.'template.php',
-            ['data' => $data],
-        );
+        try {
+            $content = $this->localRenderer->render(
+                $this->componentsPath.DIRECTORY_SEPARATOR.$directory.DIRECTORY_SEPARATOR.'template.php',
+                ['data' => $data],
+            );
+        } catch (Throwable $e) {
+            return $this->getError($e->getMessage());
+        }
 
         //$content = '<!-- start '.$directory.'-->'.PHP_EOL.$content.PHP_EOL.'<!-- end '.$directory.'-->'.PHP_EOL;
 
@@ -118,6 +132,18 @@ final class ComponentExtension implements ExtensionInterface
 
         $this->renderer->block(md5($template_path.serialize($data)), $content);
         return $this->renderer->renderBlock(md5($template_path.serialize($data)));
+    }
+
+    private function getError(string $massage): string
+    {
+        return '<span style="border: 1px solid red;
+            max-width: 200px;
+            display: inline-block;
+            overflow: hidden;
+            word-break: break-all;
+            padding: 10px 20px;
+            vertical-align: middle;"
+        >'.$massage.'</span>';
     }
 
     public function componentsCss(): string

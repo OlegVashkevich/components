@@ -2,9 +2,9 @@
 
 namespace Devanych\View;
 
+use OlegV\Components\ComponentExtension;
+
 /**
- * @method string component(string $directory, mixed $params = [])
- * @method string componentsCss()
- * @method string componentsJs()
+ * @mixin ComponentExtension
  */
 class Renderer {}

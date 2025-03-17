@@ -9,4 +9,5 @@ $this->layout('layouts/main');
 $this->block('title', 'Page Title');
 ?>
 <?= $this->component('catalog/button', []) ?>
+<?= $this->component('catalog/button2', []) ?>
 <?= $this->component('catalog/button', ['id' => 1, 'name' => 'button', 'lvl2' => ['id2' => 2, 'name2' => 'button2']]) ?>
