@@ -29,7 +29,7 @@ class Data implements ArrayAccess
         $value = null;
         if (isset($this->storage[$offset])) {
             $value = $this->storage[$offset];
-        } elseif (!$this->debug) {
+        } elseif (!$this->debug) { //warnings off
             // @phpstan-ignore-next-line
             $this->storage[$offset] = new Data([]);
         }

@@ -1,7 +1,7 @@
 <?php
 /**
  * @var array{
- *     'id': int,
+ *     "id": int,
  *     "name": string,
  *     "lvl2": array{
  *          "id2": int|null,

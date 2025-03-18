@@ -116,13 +116,14 @@ final class ComponentExtension implements ExtensionInterface
         }
 
         //$content = '<!-- start '.$directory.'-->'.PHP_EOL.$content.PHP_EOL.'<!-- end '.$directory.'-->'.PHP_EOL;
-
+        //todo copy to assert folder
         $css_path = $component_path.DIRECTORY_SEPARATOR.'style.css';
         if (file_exists($css_path)) {
             $this->cssContent[$css_path] = '<link rel="stylesheet" href="/'.$this->webRootPath.'/'.$directory.'/'.'style.css'.'?v='.filemtime(
                     $css_path,
                 ).'">';
         }
+        //todo copy to assert folder
         $js_path = $component_path.DIRECTORY_SEPARATOR.'script.js';
         if (file_exists($js_path)) {
             $this->jsContent[$js_path] = '<script src="/'.$this->webRootPath.'/'.$directory.'/'.'script.js'.'?v='.filemtime(
@@ -148,11 +149,13 @@ final class ComponentExtension implements ExtensionInterface
 
     public function componentsCss(): string
     {
+        //todo merge into one file
         return implode(PHP_EOL, $this->cssContent).PHP_EOL;
     }
 
     public function componentsJs(): string
     {
+        //todo merge into one file
         return PHP_EOL.implode(PHP_EOL, $this->jsContent).PHP_EOL;
     }
 }
